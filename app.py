@@ -118,7 +118,6 @@ results = session.query(*temperature_parameters).\
 session.close()
 
 temperature_parameters_list = []
-temperature_parameters_list_2 = []
 for date, temperature_minimum, temperature_average, temperature_maximum in results:
     temperature_parameters_dict = {}
     temperature_parameters_dict["date"] = date
@@ -128,24 +127,43 @@ for date, temperature_minimum, temperature_average, temperature_maximum in resul
     temperature_parameters_list.append(temperature_parameters_dict)
 
 @app.route("/api/v1.0/<start>")
-def from_start_date_to_end_2017(start):
+def from_start_date_to_august_2017(start):
     """Start date until 2017-08-23 or a 404 if not."""
 
     canonicalized = start.replace(" ", "").lower()
-    for date in temperature_parameters_list:
-        search_term = date["date"].replace(" ", "").lower()                     
+    for start_date in temperature_parameters_list:
+        search_date = start_date["date"].replace(" ", "").lower()
 
-        if search_term == canonicalized:
-                return jsonify(date)
+        all_dates_after_start_date = [multiple_dates for multiple_dates in temperature_parameters_list if multiple_dates["date"] >= search_date]
+
+        if search_date == canonicalized:
+            return jsonify(all_dates_after_start_date)
 
     return jsonify({"error": f"{start} not found."}), 404
+
+@app.route("/api/v1.0/<start>/<end>")
+def from_start_date_to_end_date(start, end):
+    """Start date until end date or a 404 if not."""
+
+    first_canonicalized = start.replace(" ", "").lower()
+    second_canonicalized = end.replace(" ", "").lower()
+    for date in temperature_parameters_list:
+        first_search_date = date["date"].replace(" ", "").lower()
+        second_search_date = date["date"].replace(" ", "").lower() 
+        all_dates_between_start_date_and_end_date = [multiple_dates for multiple_dates in temperature_parameters_list if multiple_dates["date"
+                                                    ] >= first_search_date and multiple_dates["date"] <= second_search_date]
+        
+        if first_search_date == first_canonicalized and second_search_date == second_canonicalized:
+            return jsonify(all_dates_between_start_date_and_end_date)
+
+    return jsonify({"error": f"{start} and {end} not found."}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
 
 # TO RUN MY APP.PY FILE
 # 1. cd to sqlalchemy-challenge folder
-# 2. activate PythonData environment
+# 2. conda activate PythonData 
 # 3. run in terminal: export FLASK_ENV=developement
 # 4. run in terminal: export FLASK_DEBUG=1
 # 5. run in terminal: python3 -m flask run
