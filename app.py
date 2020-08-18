@@ -147,14 +147,13 @@ def from_start_date_to_end_date(start, end):
 
     first_canonicalized = start.replace(" ", "").lower()
     second_canonicalized = end.replace(" ", "").lower()
-    for date in temperature_parameters_list:
-        first_search_date = date["date"].replace(" ", "").lower()
-        second_search_date = date["date"].replace(" ", "").lower() 
-        all_dates_between_start_date_and_end_date = [multiple_dates for multiple_dates in temperature_parameters_list if multiple_dates["date"
-                                                    ] >= first_search_date and multiple_dates["date"] <= second_search_date]
+    first_search_date = start.replace(" ", "").lower()
+    second_search_date = end.replace(" ", "").lower() 
+    all_dates_between_start_date_and_end_date = [multiple_dates for multiple_dates in temperature_parameters_list if multiple_dates["date"
+                                                ] >= first_search_date and multiple_dates["date"] <= second_search_date]
         
-        if first_search_date == first_canonicalized and second_search_date == second_canonicalized:
-            return jsonify(all_dates_between_start_date_and_end_date)
+    if first_search_date == first_canonicalized and second_search_date == second_canonicalized:
+        return jsonify(all_dates_between_start_date_and_end_date)
 
     return jsonify({"error": f"{start} and {end} not found."}), 404
 
