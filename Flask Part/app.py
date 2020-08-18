@@ -161,7 +161,7 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 # TO RUN MY APP.PY FILE
-# 1. cd to sqlalchemy-challenge folder
+# 1. cd to the "Flask Part" Folder
 # 2. conda activate PythonData 
 # 3. run in terminal: export FLASK_ENV=developement
 # 4. run in terminal: export FLASK_DEBUG=1
