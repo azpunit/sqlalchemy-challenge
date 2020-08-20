@@ -38,8 +38,8 @@ def welcome():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/start%20date<br/>"
-        f"/api/v1.0/start%20date/end%20date"
+        f"/api/v1.0/start_date<br/>"
+        f"/api/v1.0/start_date/end_date"
     )
 
 
@@ -60,9 +60,9 @@ def precipitation():
     # Create a dictionary from the row data and append to a list of dates and precipitaiton values
     dates_and_precipitation_values = []
     for date, precipitation in results:
-        measurement_dict = {}
-        measurement_dict[date] = precipitation
-        dates_and_precipitation_values.append(measurement_dict)
+        precipitation_dict = {}
+        precipitation_dict[date] = precipitation
+        dates_and_precipitation_values.append(precipitation_dict)
 
     return jsonify(dates_and_precipitation_values)
 
@@ -74,9 +74,7 @@ def stations():
 
     """Return a list of all stations"""
     # Query all stations
-    station_query = session.query(Measurement.station).\
-                    group_by(Measurement.station).\
-                    order_by(func.count(Measurement.station).desc()).all()
+    station_query = session.query(Station.station).all()
 
     session.close()
 
@@ -93,17 +91,22 @@ def temperature_observations():
 
     """Return a list of all temperatures observations"""
     # Query all temperature observations
-    temperature_observations_query = session.query(Measurement.tobs).\
+    temperature_observations_query = session.query(Measurement.date, Measurement.tobs).\
                                      filter(Measurement.station == "USC00519281").\
                                      filter(Measurement.date >= '2016-08-23').\
                                      order_by(Measurement.date).all()
 
     session.close()
 
-    # Convert list of tuples into normal list
-    all_temperature_observations = list(np.ravel(temperature_observations_query))
+     # Create a dictionary from the row data and append to a list of dates and temperature values
+    dates_and_temperature_values = []
+    for date, temperature_observations in temperature_observations_query:
+        temperature_dict = {}
+        temperature_dict["date"] = date
+        temperature_dict["tobs"] = temperature_observations
+        dates_and_temperature_values.append(temperature_dict)
 
-    return jsonify(all_temperature_observations)
+    return jsonify(dates_and_temperature_values)
 
 
 # Create our session (link) from Python to the DB
@@ -162,7 +165,9 @@ if __name__ == '__main__':
 
 # TO RUN MY APP.PY FILE
 # 1. cd to the "Flask Part" Folder
-# 2. conda activate PythonData 
-# 3. run in terminal: export FLASK_ENV=developement
-# 4. run in terminal: export FLASK_DEBUG=1
-# 5. run in terminal: python3 -m flask run
+# 2. run in vscode terminal: conda activate PythonData 
+# 3. run in vscode terminal: export FLASK_ENV=developement
+# 4. run in vscode terminal: export FLASK_DEBUG=1
+# 5. run in vscode terminal: python3 -m flask run
+# NOTE: it might show "address already in use". That means that it was already working. 
+
